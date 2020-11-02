@@ -4,6 +4,8 @@ use std::ops::{
     Add,
     Sub,
 };
+use std::fmt::{Display, Formatter};
+use colored::Colorize;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 enum OneWayRoadType { Up, Left, Bottom, Right }
@@ -30,6 +32,54 @@ enum Tile {
     Light(LightCond),
     Road(RoadType),
     Unknown,
+}
+impl Display for Tile {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Tile::Building => {
+                write!(f, "{}", "#")
+            },
+            Tile::Park(ParkType::Free) => {
+                write!(f, "{}", "p".yellow())
+            },
+            Tile::Park(ParkType::Full) => {
+                write!(f, "{}", "p".red())
+            },
+            Tile::Light(LightCond::Green) => {
+                write!(f, "{}", "!".green())
+            },
+            Tile::Light(LightCond::Red) => {
+                write!(f, "{}", "#".red())
+            },
+            Tile::Road(RoadType::OneWay(OneWayRoadType::Bottom)) => {
+                write!(f, "{}", "v")
+            },
+            Tile::Road(RoadType::OneWay(OneWayRoadType::Up)) => {
+                write!(f, "{}", "^")
+            },
+            Tile::Road(RoadType::OneWay(OneWayRoadType::Left)) => {
+                write!(f, "{}", "<")
+            },
+            Tile::Road(RoadType::OneWay(OneWayRoadType::Right)) => {
+                write!(f, "{}", ">")
+            },
+            Tile::Road(RoadType::TwoWay(TwoWayRoadType::UpLeft)) => {
+                write!(f, "{}", "x")
+            },
+            Tile::Road(RoadType::TwoWay(TwoWayRoadType::DownLeft)) => {
+                write!(f, "{}", "x")
+            },
+            Tile::Road(RoadType::TwoWay(TwoWayRoadType::UpRight)) => {
+                write!(f, "{}", "x")
+            },
+            Tile::Road(RoadType::TwoWay(TwoWayRoadType::DownRight)) => {
+                write!(f, "{}", "x")
+            },
+            _ => {
+                write!(f, "{}", "?")
+            }
+        }
+    }
 }
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
@@ -77,6 +127,19 @@ struct City {
     layout: Layout,
     entry_points: Vec<Position>,
     buildings: Vec<TargetType>,
+}
+impl Display for City {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let lx = self.tiles.len();
+        let ly = self.tiles[0].len();
+        for i in 0..lx {
+            for j in 0..ly {
+                let _ = write!(f, "{} ", self.tiles[i][j]);
+            }
+            write!(f, "{}\n", "");
+        }
+        Ok(())
+    }
 }
 impl City {
     fn calculate_tile_type(city_type: CityType, b_size: u32, i: u32, j: u32) -> Tile {
@@ -175,13 +238,15 @@ impl City {
                 return tile
             },
             CityType::Bordered => {
-                Tile::Unknown
+                unimplemented!()
+                // todo: Write city generator for Bordered Type Cities
             },
             CityType::Line => {
-                Tile::Unknown
+                unimplemented!()
+                // todo: Write city generator for Line Type Cities
             },
             _ => {
-                Tile::Unknown
+                panic!()
             }
         };
         return tile_type;
@@ -221,15 +286,20 @@ impl City {
         return entry_point_vec
     }
     fn building_positions(city_type: CityType, b_num_x: u32, b_num_y: u32, b_size: u32) -> Vec<TargetType> {
-        match city_type {
-            CityType::Default => {
-
-            },
-            CityType::Bordered => {
-
-            },
-            CityType::Line => {
-                unimplemented!()
+        if false {
+            match city_type {
+                CityType::Default => {
+                    // todo: Write building position generator for Default Type Cities
+                    unimplemented!()
+                },
+                CityType::Bordered => {
+                    // todo: Write building position generator for Bordered Type Cities
+                    unimplemented!()
+                },
+                CityType::Line => {
+                    // todo: Write building position generator for Line Type Cities
+                    unimplemented!()
+                }
             }
         }
         return Vec::new()
@@ -255,15 +325,15 @@ impl City {
     fn generate_city_grid(city_type: CityType, b_num_x: u32, b_num_y: u32, b_size: u32) -> Vec<Vec<Tile>>{
         let len_x = City::city_length_x(city_type, b_num_x, b_size);
         let len_y = City::city_length_y(city_type, b_num_y, b_size);
-        let mut tiles : Vec<Vec<Tile>> = Vec::with_capacity(len_x as usize);
-        for _ in 0..len_x {
-            tiles.push(vec![Tile::Building; len_y as usize]);
-        }
+
+        let mut tiles : Vec<Vec<Tile>> = vec![ vec![Tile::Building; len_y as usize] ; len_x as usize ];
+
         for i in 0..len_x {
             for j in 0..len_y {
                 tiles[i as usize][j as usize] = City::calculate_tile_type(city_type, b_size, i, j);
             }
         }
+
         return tiles
     }
     pub fn new(city_type: CityType, b_num_x: u32, b_num_y: u32, b_size: u32) -> City {
@@ -376,5 +446,5 @@ fn main() {
         0,
         SimulationMode::Verbose
     );
-    print!("{:#?}",sim);
+    print!("{}",sim.city);
 }
