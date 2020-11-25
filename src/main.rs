@@ -391,9 +391,15 @@ enum ParkingType {
 impl Display for ParkingType{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            ParkingType::Searching => {write!(f,"{}","Searching".red())}
-            ParkingType::Circling(pos,int) => {write!(f,"{} {}", pos ,int.to_string().blue())}
-            ParkingType::Found(pos) => {write!(f,"{}",pos)}
+            ParkingType::Searching => {
+                write!(f,"{}","Searching".red())
+            }
+            ParkingType::Circling(pos,int) => {
+                write!(f,"{} {}", pos ,int.to_string().blue())
+            }
+            ParkingType::Found(pos) => {
+                write!(f,"{}",pos)
+            }
         }
     }
 }
@@ -408,10 +414,18 @@ enum CarState {
 impl Display for CarState {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            CarState::Idle => { write!(f, "{}", "Idle".bright_green()) }
-            CarState::Moving => { write!(f, "{}", "Moving".bright_blue()) }
-            CarState::Parking(ParkingType) => { write!(f, "{} {}", ParkingType, "Parking".red()) }
-            CarState::Parked => { write!(f, "{}", "Parked".black()) }
+            CarState::Idle => {
+                write!(f, "{}", "Idle".bright_green())
+            }
+            CarState::Moving => {
+                write!(f, "{}", "Moving".bright_blue())
+            }
+            CarState::Parking(ParkingType) => {
+                write!(f, "{} {}", ParkingType, "Parking".red())
+            }
+            CarState::Parked => {
+                write!(f, "{}", "Parked".black())
+            }
         }
     }
 }
