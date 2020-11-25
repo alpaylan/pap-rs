@@ -378,6 +378,53 @@ struct Car {
     target: TargetType,
     state: CarState
 }
+
+impl Car{
+    pub fn new(
+        id: u32,
+        p: Position,
+        dir: Direction,
+        target: TargetType,
+        state: CarState
+    ) -> Car {
+        Car {
+            id,
+            p,
+            dir,
+            target,
+            state
+        }
+    }
+}
+
+impl Display for Car{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Displaying the car of {} id Targeting {}\nCar's position: {}\nIt directs to: {}\nIt's state: {}",
+        self.id.yellow(),
+        self.target.red(),
+        self.p.green(),
+        self.dir.blue(),
+        self.state.purple()
+    )
+    }
+}
+
+    pub fn new(city_type: CityType, b_num_x: u32, b_num_y: u32, b_size: u32) -> City {
+        City {
+            t: city_type,
+            layout: Layout {
+                b_num_x: b_num_x,
+                b_num_y: b_num_y,
+                b_size: b_size
+            },
+            tiles: City::generate_city_grid(city_type, b_num_x, b_num_y, b_size),
+            entry_points: City::generate_entry_points(city_type, b_num_x, b_num_y, b_size),
+            buildings: City::building_positions(city_type, b_num_x, b_num_y, b_size),
+        }
+    }
+
+
+
 #[derive(Debug)]
 enum SimulationMode {
     Verbose,
@@ -448,3 +495,5 @@ fn main() {
     );
     print!("{}",sim.city);
 }
+
+
