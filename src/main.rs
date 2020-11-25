@@ -86,6 +86,12 @@ impl Display for Tile {
 struct Position { x: u32, y: u32 }
 type Direction = Position;
 
+impl Display for Position{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result{
+        write!(f, "({},{})", self.x, self.y)
+    }
+}
+
 impl Add<Position> for Position {
     type Output = Position;
     fn add(self, rhs: Position) -> Self::Output {
@@ -357,11 +363,39 @@ enum TargetType {
     Exit(Position),
     JustPosition(Position),
 }
+
+impl Display for TargetType{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TargetType::Building(Position) => {
+                write!(f, "{} , {}", "Building".blue(), Position)
+            },
+            TargetType::Exit(Position) => {
+                write!(f, "{} , {}", "Exit".red() , Position)
+            }
+            TargetType::JustPosition(Position) => {
+                write!(f, "{} , {}", "Road".yellow() , Position)
+            }
+        }
+    }
+}
+
+
 #[derive(Debug)]
 enum ParkingType {
     Searching,
     Circling(Position, u32),
     Found(Position),
+}
+
+impl Display for ParkingType{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ParkingType::Searching => {write!(f,"{}","Searching".red())}
+            ParkingType::Circling(pos,int) => {write!(f,"{} {}", pos ,int.to_string().blue())}
+            ParkingType::Found(pos) => {write!(f,"{}",pos)}
+        }
+    }
 }
 #[derive(Debug)]
 enum CarState {
@@ -369,6 +403,17 @@ enum CarState {
     Moving,
     Parking(ParkingType),
     Parked
+}
+
+impl Display for CarState {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CarState::Idle => { write!(f, "{}", "Idle".bright_green()) }
+            CarState::Moving => { write!(f, "{}", "Moving".bright_blue()) }
+            CarState::Parking(ParkingType) => { write!(f, "{} {}", ParkingType, "Parking".red()) }
+            CarState::Parked => { write!(f, "{}", "Parked".black()) }
+        }
+    }
 }
 #[derive(Debug)]
 struct Car {
@@ -399,29 +444,14 @@ impl Car{
 
 impl Display for Car{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Displaying the car of {} id Targeting {}\nCar's position: {}\nIt directs to: {}\nIt's state: {}",
-        self.id.yellow(),
-        self.target.red(),
-        self.p.green(),
-        self.dir.blue(),
-        self.state.purple()
-    )
+        write!(f, "\nDisplaying the car of {} id Targeting {}\nCar's position: {}\nIt directs to: {}\nIt's state: {}",
+        self.id.to_string().yellow(),
+        self.target,
+        self.p,
+        self.dir,
+        self.state)
     }
 }
-
-    pub fn new(city_type: CityType, b_num_x: u32, b_num_y: u32, b_size: u32) -> City {
-        City {
-            t: city_type,
-            layout: Layout {
-                b_num_x: b_num_x,
-                b_num_y: b_num_y,
-                b_size: b_size
-            },
-            tiles: City::generate_city_grid(city_type, b_num_x, b_num_y, b_size),
-            entry_points: City::generate_entry_points(city_type, b_num_x, b_num_y, b_size),
-            buildings: City::building_positions(city_type, b_num_x, b_num_y, b_size),
-        }
-    }
 
 
 
